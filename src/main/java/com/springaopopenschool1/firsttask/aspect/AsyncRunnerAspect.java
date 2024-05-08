@@ -18,17 +18,6 @@ public class AsyncRunnerAspect {
     public void asyncRunnerPointcut() {
     }
 
-    //    @Around("asyncRunnerPointcut()")
-//    public CompletableFuture<Void> asyncRunner(ProceedingJoinPoint joinPoint) {
-//        return CompletableFuture.runAsync(() -> {
-//            try {
-//                log.info("Асинхронный запуск в AsyncRunnerAspect ");
-//                joinPoint.proceed();
-//            } catch (Throwable e) {
-//                log.error("Ошибка AsyncRunnerAspect", e);
-//            }
-//        });
-//    }
     @Around("asyncRunnerPointcut()")
     public CompletableFuture<Void> asyncRunner(ProceedingJoinPoint joinPoint) {
         return CompletableFuture.runAsync(() -> {

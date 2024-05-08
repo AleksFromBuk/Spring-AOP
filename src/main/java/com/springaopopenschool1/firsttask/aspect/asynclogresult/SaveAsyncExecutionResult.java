@@ -1,4 +1,4 @@
-package com.springaopopenschool1.firsttask.aspect.loggingexecutionresult;
+package com.springaopopenschool1.firsttask.aspect.asynclogresult;
 
 import com.springaopopenschool1.firsttask.model.ExecutionLog;
 import com.springaopopenschool1.firsttask.repository.ExecutionLogRepository;
