@@ -8,6 +8,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -25,7 +27,8 @@ public class SaveAsyncExecutionResult {
     private Executor customExecutor;
     private ExecutionLogRepository repository;
 
-    public SaveAsyncExecutionResult(ExecutionLogRepository repository, Executor executor) {
+    @Autowired
+    public SaveAsyncExecutionResult(ExecutionLogRepository repository, @Qualifier("customExecutor") Executor executor) {
         this.repository = repository;
         this.customExecutor = executor;
     }

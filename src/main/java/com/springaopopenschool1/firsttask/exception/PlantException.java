@@ -1,4 +1,4 @@
-package com.springaopopenschool1.firsttask.model;
+package com.springaopopenschool1.firsttask.exception;
 
 import com.springaopopenschool1.firsttask.annotation.Throw;
 

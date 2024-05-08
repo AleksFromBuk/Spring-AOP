@@ -6,11 +6,15 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,7 +23,7 @@ import java.util.concurrent.Future;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("application-test")
 class SaveAsyncExecutionResultTest {
 
     @Autowired
@@ -68,7 +72,7 @@ class SaveAsyncExecutionResultTest {
 
         saveAsyncExecutionResult.logExecutionTimeAsync(joinPoint);
 
-        verify(repository, timeout(1000).times(1)).save(any(ExecutionLog.class));
+        verify(repository, timeout(1000).times(5)).save(any(ExecutionLog.class));
     }
 
     @Test

@@ -33,7 +33,8 @@ public class SpringAOPApplication {
         System.out.println(plantService.getPlantByType("Цветок"));
         System.out.println(plantService.getPlantByName("Роза"));
         ThreadUtils.waitTime(200);
-        plantService.addPlants(List.of(new Plant("Кукуруза", "Не огурец")));
+        plantService.addPlants(List.of(new Plant("Кукуруза", "Не огурец"),
+                new Plant("Дуб", "Полезен")));
         plantService.getPlantByType("Годнота").forEach(System.out::println);
     }
 

@@ -1,5 +1,6 @@
 package com.springaopopenschool1.firsttask.service;
 
+import com.springaopopenschool1.firsttask.exception.ResourceNotFoundException;
 import com.springaopopenschool1.firsttask.dto.ExecutionStatsDTO;
 import com.springaopopenschool1.firsttask.repository.ExecutionLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,13 @@ public class ExecutionStatsService {
     }
 
     public ExecutionStatsDTO getExecutionStats() {
-        long averageExecutionTime = executionLogRepository.findAverageExecutionTime();
-        long minExecutionTime = executionLogRepository.findMinExecutionTime();
-        long maxExecutionTime = executionLogRepository.findMaxExecutionTime();
+       Double averageExecutionTime = executionLogRepository
+                .findAverageExecutionTime().orElseThrow(() -> new ResourceNotFoundException("data not found"));
+        Long minExecutionTime = executionLogRepository.findMinExecutionTime()
+                .orElseThrow(() -> new ResourceNotFoundException("data not found"));
+        Long maxExecutionTime = executionLogRepository.findMaxExecutionTime()
+                .orElseThrow(() -> new ResourceNotFoundException("data not found"));
+
 
         return ExecutionStatsDTO.builder()
                 .averageExecutionTime(averageExecutionTime)

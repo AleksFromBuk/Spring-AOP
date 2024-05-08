@@ -1,5 +1,6 @@
 package com.springaopopenschool1.firsttask.controller;
 
+import com.springaopopenschool1.firsttask.exception.ExceptionHandlerGlobal;
 import com.springaopopenschool1.firsttask.dto.ExecutionStatsDTO;
 import com.springaopopenschool1.firsttask.repository.ExecutionLogRepository;
 import com.springaopopenschool1.firsttask.service.ExecutionStatsService;
@@ -13,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
@@ -35,7 +38,7 @@ public class ExecutionStatsControllerTest {
     public void setup() {
         try (AutoCloseable mocks = MockitoAnnotations.openMocks(this)) {
             mockMvc = MockMvcBuilders.standaloneSetup(statsController)
-                    .setControllerAdvice(new ExceptionHandlerController())
+                    .setControllerAdvice(new ExceptionHandlerGlobal())
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +69,7 @@ public class ExecutionStatsControllerTest {
         mockMvc.perform(get("/stats")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Error retrieving execution stats"));
+                .andExpect(content().string("Unexpected error"));
     }
 
     @Test
@@ -93,9 +96,9 @@ public class ExecutionStatsControllerTest {
     public void test_execution_log_repository_is_empty() {
         // Arrange
         ExecutionLogRepository executionLogRepository = mock(ExecutionLogRepository.class);
-        when(executionLogRepository.findAverageExecutionTime()).thenReturn(0L);
-        when(executionLogRepository.findMinExecutionTime()).thenReturn(0L);
-        when(executionLogRepository.findMaxExecutionTime()).thenReturn(0L);
+        when(executionLogRepository.findAverageExecutionTime()).thenReturn(Optional.of(0D));
+        when(executionLogRepository.findMinExecutionTime()).thenReturn(Optional.of(0L));
+        when(executionLogRepository.findMaxExecutionTime()).thenReturn(Optional.of(0L));
         ExecutionStatsService executionStatsService = new ExecutionStatsService(executionLogRepository);
         ExecutionStatsController controller = new ExecutionStatsController(executionStatsService);
 

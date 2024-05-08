@@ -12,7 +12,8 @@ import java.io.Serializable;
 public class ExecutionStatsDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private final long averageExecutionTime;
+    private final double averageExecutionTime;
     private final long minExecutionTime;
     private final long maxExecutionTime;
+    private final boolean isAsync;
 }

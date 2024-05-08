@@ -9,12 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("application-test")
 public class ExecutionLogRepositoryTest {
 
     @Autowired
@@ -33,8 +34,8 @@ public class ExecutionLogRepositoryTest {
         repository.save(log2);
         repository.save(log3);
 
-        Double average = repository.findAverageExecutionTimeByMethodName("specificMethod");
-        assertThat(average).isEqualTo(166.66666666666666);
+        Optional<Double> average = repository.findAverageExecutionTimeByMethodName("specificMethod");
+        assertThat(average.get()).isEqualTo(166.66666666666666);
     }
 
     @Test
@@ -47,9 +48,9 @@ public class ExecutionLogRepositoryTest {
         repository.save(log1);
         repository.save(log2);
 
-        List<Object[]> result = repository.findMaxAndMinExecutionTimeByMethodName("specificMethod");
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0)[0]).isEqualTo(180L);
-        assertThat(result.get(0)[1]).isEqualTo(120L);
+        Optional<List<Object[]>> result = repository.findMaxAndMinExecutionTimeByMethodName("specificMethod");
+        assertThat(result.get()).hasSize(1);
+        assertThat(result.get().get(0)[0]).isEqualTo(180L);
+        assertThat(result.get().get(0)[1]).isEqualTo(120L);
     }
 }
