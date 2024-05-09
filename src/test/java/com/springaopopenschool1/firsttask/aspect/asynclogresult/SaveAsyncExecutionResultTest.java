@@ -6,30 +6,27 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("application-test")
-class SaveAsyncExecutionResultTest {
+public class SaveAsyncExecutionResultTest {
 
     @Autowired
     private SaveAsyncExecutionResult saveAsyncExecutionResult;
 
-    @MockBean
+    @Autowired
     private ExecutionLogRepository repository;
 
     @MockBean
@@ -38,24 +35,10 @@ class SaveAsyncExecutionResultTest {
     @MockBean
     private Signature signature;
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    @Test
-    void testLogExecutionTimeAsyncIntegration() throws Throwable {
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(signature.getDeclaringTypeName()).thenReturn("com.example.ClassName");
-        when(signature.getName()).thenReturn("methodName");
-        when(joinPoint.getArgs()).thenReturn(new Object[]{joinPoint, 1000L, true});
-
-        saveAsyncExecutionResult.logExecutionTimeAsync(joinPoint);
-
-        verify(repository, timeout(1000).times(1)).save(any(ExecutionLog.class));
-    }
-
     @BeforeEach
     void setUp() {
         try (AutoCloseable mock = MockitoAnnotations.openMocks(this)) {
-            executorService = Executors.newSingleThreadExecutor();
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
             saveAsyncExecutionResult = new SaveAsyncExecutionResult(repository, executorService);
 
             when(joinPoint.getSignature()).thenReturn(signature);
@@ -67,27 +50,29 @@ class SaveAsyncExecutionResultTest {
     }
 
     @Test
-    void testLogExecutionTimeAsync() throws Throwable {
+    public void testAsyncLogExecution() throws Throwable {
+        when(joinPoint.getSignature()).thenReturn(signature);
+        when(signature.getDeclaringTypeName()).thenReturn("com.example.ClassName");
+        when(signature.getName()).thenReturn("methodName");
         when(joinPoint.getArgs()).thenReturn(new Object[]{joinPoint, 1000L, true});
 
-        saveAsyncExecutionResult.logExecutionTimeAsync(joinPoint);
+        Object[] args = new Object[]{joinPoint, 100L, true};
+        when(joinPoint.getArgs()).thenReturn(args);
 
-        verify(repository, timeout(1000).times(5)).save(any(ExecutionLog.class));
-    }
+        // Вызов аспекта
+        CompletableFuture<ExecutionLog> future = saveAsyncExecutionResult.logExecutionTimeAsync(joinPoint);
 
-    @Test
-    void testLogExecutionTimeAsync2() throws Throwable {
-        when(joinPoint.getArgs()).thenReturn(new Object[]{joinPoint, 1000L, true});
+        // Проверка результатов
+        ExecutionLog result = future.get();
+        assertThat(result).isNotNull();
+        assertThat(result.getExecutionTime()).isEqualTo(100L);
+        assertThat(result.isAsyncExecuted()).isTrue();
 
-        Future<?> future = (Future<?>) saveAsyncExecutionResult.logExecutionTimeAsync(joinPoint);
-
-        // Проверяем, что задача завершена
-        future.get(); // Дожидаемся завершения асинхронной операции
-
-        // Проверяем, что метод save был вызван с нужными параметрами
-        verify(repository, times(1)).save(any(ExecutionLog.class));
-
-        // Проверяем, что метод proceed был вызван для joinPoint
-        verify(joinPoint, times(1)).proceed();
+        // Проверка, что данные сохранены в базу данных
+        ExecutionLog savedLog = repository.findById(result.getId()).orElse(null);
+        assertThat(savedLog).isNotNull();
+        assert savedLog != null;
+        assertThat(savedLog.getExecutionTime()).isEqualTo(100L);
+        assertThat(savedLog.isAsyncExecuted()).isTrue();
     }
 }

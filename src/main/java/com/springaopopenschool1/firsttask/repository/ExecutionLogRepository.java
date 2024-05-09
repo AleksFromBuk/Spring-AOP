@@ -25,4 +25,6 @@ public interface ExecutionLogRepository extends CrudRepository<ExecutionLog, UUI
 
     @Query("SELECT MAX(e.executionTime), MIN(e.executionTime) FROM ExecutionLog e WHERE e.methodName = ?1")
     Optional<List<Object[]>> findMaxAndMinExecutionTimeByMethodName(String methodName);
+
+    Iterable<ExecutionLog> findAll();
 }

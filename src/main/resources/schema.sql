@@ -1,5 +1,5 @@
 -- DROP EXTENSION IF EXISTS "uuid-ossp";
--- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE if not exists execution_log (
                               id UUID PRIMARY KEY default uuid_generate_v4(),

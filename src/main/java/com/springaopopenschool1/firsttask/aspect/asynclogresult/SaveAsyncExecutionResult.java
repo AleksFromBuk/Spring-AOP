@@ -26,6 +26,7 @@ import java.util.concurrent.Executor;
 public class SaveAsyncExecutionResult {
     private Executor customExecutor;
     private ExecutionLogRepository repository;
+    private ExecutionLog executionLog;
 
     @Autowired
     public SaveAsyncExecutionResult(ExecutionLogRepository repository, @Qualifier("customExecutor") Executor executor) {
@@ -38,7 +39,7 @@ public class SaveAsyncExecutionResult {
     }
 
     @Around("AsyncSaveResult()")
-    public Object logExecutionTimeAsync(ProceedingJoinPoint joinPoint) throws Throwable {
+    public CompletableFuture<ExecutionLog> logExecutionTimeAsync(ProceedingJoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         ProceedingJoinPoint joinPointArg = (ProceedingJoinPoint) args[0];
         long timeExecuted = (Long) args[1];
@@ -50,13 +51,14 @@ public class SaveAsyncExecutionResult {
                 .methodName(joinPointArg.getSignature().getName())
                 .executionTime(timeExecuted)
                 .createdAt(LocalDateTime.now())
-                .isAsync(methodType)
+                .isAsyncExecuted(methodType)
                 .build();
-
 
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             try {
-                saveWithRetry(currentResult);
+                String threadName = Thread.currentThread().getName();
+                log.info("Asynchronously recording progress in a thread: {}", threadName);
+             executionLog = saveWithRetry(currentResult);
             } catch (Exception e) {
                 log.error("Error when trying to save asynchronously", e);
             }
@@ -64,22 +66,14 @@ public class SaveAsyncExecutionResult {
 
         return future.handle((v, throwable) -> {
             if (throwable != null) {
-                log.error("Error when trying to save asynchronously", throwable);
+                log.error("Error in async execution for method: {}", joinPointArg.getSignature().getName(), throwable);
             }
-            try {
-                return joinPoint.proceed();
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
-            }
+            return executionLog;
         });
     }
 
-    @Retryable(
-            value = {Exception.class},
-            maxAttempts = 5,
-            backoff = @Backoff(delay = 1000)
-    )
-    private void saveWithRetry(ExecutionLog currentResult) {
-        repository.save(currentResult);
+    @Retryable(value = Exception.class, maxAttempts = 5, backoff = @Backoff(delay = 1000))
+    private ExecutionLog saveWithRetry(ExecutionLog currentResult) {
+        return repository.save(currentResult);
     }
 }

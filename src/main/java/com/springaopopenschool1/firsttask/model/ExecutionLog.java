@@ -30,5 +30,5 @@ public class ExecutionLog {
     @NotNull
     private LocalDateTime createdAt;
     @NotNull
-    private boolean isAsync;
+    private boolean isAsyncExecuted;
 }

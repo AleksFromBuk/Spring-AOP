@@ -21,7 +21,7 @@ public class ExecutionLogServiceImpl implements ExecutionLogService {
 
     @Override
     @Transactional
-    public void logExecutionTime(ProceedingJoinPoint joinPoint, long timeExecuted, boolean isAsync) {
+    public void logExecutionTime(ProceedingJoinPoint joinPoint, long timeExecuted, boolean isAsyncExecuted) {
         try {
             ExecutionLog log = ExecutionLog.builder()
                     .id(UUID.randomUUID())
@@ -29,7 +29,7 @@ public class ExecutionLogServiceImpl implements ExecutionLogService {
                     .methodName(joinPoint.getSignature().getName())
                     .executionTime(timeExecuted)
                     .createdAt(LocalDateTime.now())
-                    .isAsync(isAsync)
+                    .isAsyncExecuted(isAsyncExecuted)
                     .build();
             repository.save(log);
         } catch (Exception e) {

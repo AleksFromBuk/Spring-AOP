@@ -1,6 +1,7 @@
 package com.springaopopenschool1.firsttask.service;
 
 import com.springaopopenschool1.firsttask.annotation.TrackAsyncTime;
+import com.springaopopenschool1.firsttask.annotation.TrackTime;
 import com.springaopopenschool1.firsttask.model.Plant;
 import com.springaopopenschool1.firsttask.exception.PlantException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +34,12 @@ public class PlantService {
         );
     }
 
+    @TrackTime
     public Plant getPlantByName(String name) {
         return plants.get(name);
     }
 
+    @TrackTime
     public List<Plant> getPlantByType(String type) {
         return plants.values()
                 .stream()

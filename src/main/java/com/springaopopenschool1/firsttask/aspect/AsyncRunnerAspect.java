@@ -26,7 +26,6 @@ public class AsyncRunnerAspect {
                 joinPoint.proceed();
             } catch (Throwable e) {
                 log.error("Error in AsyncRunnerAspect", e);
-                // Добавьте здесь вашу логику обработки ошибок, например, повторение попытки
             }
         }).whenComplete((result, error) -> {
             if (error != null) {

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ExecutionStatsService {
+    private static final String ERROR_MESSAGE = "data not found";
     private ExecutionLogRepository executionLogRepository;
 
     @Autowired
@@ -19,11 +20,11 @@ public class ExecutionStatsService {
 
     public ExecutionStatsDTO getExecutionStats() {
        Double averageExecutionTime = executionLogRepository
-                .findAverageExecutionTime().orElseThrow(() -> new ResourceNotFoundException("data not found"));
+                .findAverageExecutionTime().orElseThrow(() -> new ResourceNotFoundException(ERROR_MESSAGE));
         Long minExecutionTime = executionLogRepository.findMinExecutionTime()
-                .orElseThrow(() -> new ResourceNotFoundException("data not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ERROR_MESSAGE));
         Long maxExecutionTime = executionLogRepository.findMaxExecutionTime()
-                .orElseThrow(() -> new ResourceNotFoundException("data not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ERROR_MESSAGE));
 
 
         return ExecutionStatsDTO.builder()

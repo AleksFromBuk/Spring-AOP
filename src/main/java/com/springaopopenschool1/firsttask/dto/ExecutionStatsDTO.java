@@ -15,5 +15,5 @@ public class ExecutionStatsDTO implements Serializable {
     private final double averageExecutionTime;
     private final long minExecutionTime;
     private final long maxExecutionTime;
-    private final boolean isAsync;
+    private final boolean isAsyncExecuted;
 }

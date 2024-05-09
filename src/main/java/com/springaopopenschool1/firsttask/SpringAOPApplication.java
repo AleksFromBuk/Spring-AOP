@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @EnableJpaRepositories("com.springaopopenschool1.firsttask.repository")
 public class SpringAOPApplication {
-    // private final Info info;
     private final PlantService plantService;
 
     public static void main(String[] args) {
@@ -27,7 +26,6 @@ public class SpringAOPApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void applicationReady() {
-        //info.info();
         plantService.addPlant(new Plant("Роза", "Цветок"));
         ThreadUtils.waitTime(200);
         System.out.println(plantService.getPlantByType("Цветок"));
