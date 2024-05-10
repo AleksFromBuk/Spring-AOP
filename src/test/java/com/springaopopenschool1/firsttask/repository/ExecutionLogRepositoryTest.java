@@ -23,7 +23,7 @@ public class ExecutionLogRepositoryTest {
 
     @Test
     @Transactional
-    public void testFindAverageExecutionTimeByMethodNameMultipleLogs() {
+    public void testFindAverageExecutionTimeByAllMethodsNameMultipleLogs() {
         ExecutionLog log1 = new ExecutionLog(UUID.randomUUID(), "TestClass",
                 "specificMethod", 120, LocalDateTime.now(), false);
         ExecutionLog log2 = new ExecutionLog(UUID.randomUUID(), "TestClass",
@@ -34,7 +34,7 @@ public class ExecutionLogRepositoryTest {
         repository.save(log2);
         repository.save(log3);
 
-        Optional<Double> average = repository.findAverageExecutionTimeByMethodName("specificMethod");
+        Optional<Double> average = repository.findaverageExecutionTimeByAllMethodsName("specificMethod");
         assertThat(average.get()).isEqualTo(166.66666666666666);
     }
 

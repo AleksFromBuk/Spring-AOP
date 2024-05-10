@@ -1,6 +1,7 @@
 package com.springaopopenschool1.firsttask;
 
 import com.springaopopenschool1.firsttask.model.Plant;
+import com.springaopopenschool1.firsttask.repository.ExecutionLogRepository;
 import com.springaopopenschool1.firsttask.service.PlantService;
 import com.springaopopenschool1.firsttask.utils.ThreadUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 @EnableJpaRepositories("com.springaopopenschool1.firsttask.repository")
 public class SpringAOPApplication {
     private final PlantService plantService;
+    private final ExecutionLogRepository executionLogRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(SpringAOPApplication.class, args);
@@ -31,9 +33,10 @@ public class SpringAOPApplication {
         System.out.println(plantService.getPlantByType("Цветок"));
         System.out.println(plantService.getPlantByName("Роза"));
         ThreadUtils.waitTime(200);
-        plantService.addPlants(List.of(new Plant("Кукуруза", "Не огурец"),
+        plantService.addPlants(List.of(new Plant("Кукуруза", "Не фрукт"),
                 new Plant("Дуб", "Полезен")));
         plantService.getPlantByType("Годнота").forEach(System.out::println);
+        //executionLogRepository.findAll().forEach(System.out::println);
     }
 
 }
